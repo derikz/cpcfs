@@ -58,7 +58,7 @@ Used environment variables:
 	TEMP		directory for temporary files (default: current)
 	COMSPEC		specifies the standard command processor for DOS
 
-PAGER must point to a program that expects its argument on the commandline, 
+PAGER must point to a program that expects its argument on the commandline,
 and not from stdin, so MORE.COM does not work. V. Buergs's famous LIST does
 not work the most time, I don't know why. I recommend LESS.
 
@@ -116,7 +116,7 @@ GENERAL commands
 OPEN <file>
 	Load an image
 
-Closes the one in memory, if any. It appends the string ".DSK" to the 
+Closes the one in memory, if any. It appends the string ".DSK" to the
 DOS filename, if no extension is given.
 
 
@@ -141,7 +141,7 @@ TRANSFER commands
 =================
 
 GET <options> <cpm-filename> [<dos-filename>]
-	Copies a file from CPC to DOS filesystem. If <dos-filename> is 
+	Copies a file from CPC to DOS filesystem. If <dos-filename> is
 	present, <cpm-filename> is renamed while copying.
 GET <options> <cpm-filename>... <dos-path>
 	Copies some files form CPC to a DOS directory. <dos-path> must
@@ -166,7 +166,7 @@ See also:
 
 
 PUT <options> <dos-filename> [<cpm-filename>]
-	Copies a file from DOS to CPC filesystem. If <cpm-filename> is 
+	Copies a file from DOS to CPC filesystem. If <cpm-filename> is
 	present, <dos-filename> is renamed to that name.
 PUT <options> <dos-filename> <userarea>:
 	Copies *one* file from DOS to a user area of the CP/M filesystem.
@@ -185,7 +185,7 @@ See also:
 	options		filenames
 
 
-MODE <mode>            
+MODE <mode>
 	Set transfer mode to either Binary, Text, or Auto.
 	  * Binary	the whole file is processed
 	  * Text	the file is processed up to the first Ctrl-Z
@@ -196,7 +196,7 @@ See also:
 	options
 
 Printable characters are newlines (10,13) and characters between space (32)
-and tilde (126). <mode> can be abbreviated to its first character B, T, or A. 
+and tilde (126). <mode> can be abbreviated to its first character B, T, or A.
 
 
 SYSGEN <file>
@@ -206,7 +206,7 @@ Note: The image must be in system format!
 
 It only works, if the image was formatted with two system tracks (e.g.
 system or vortex format). See STAT, if you want to know the format or
-whether CP/M is already in the image. 
+whether CP/M is already in the image.
 
 To obtain a CP/M-image you can use the accompanying BASIC program
 GETCPM.BAS. It runs on a CPC and copies the system tracks off a real CPC
@@ -228,14 +228,14 @@ See also:
 	variables (COMSPEC)	ldir	cd
 
 Executes the program <command> in a DOS-Shell. If only a "!" is
-typed, CPCFS invokes the interactive shell given in the %COMSPEC% 
+typed, CPCFS invokes the interactive shell given in the %COMSPEC%
 environment variable or C:\COMMAND.COM if the variable isn't set. You
-must type EXIT to return from the shell to CPCFS. Contrary to other 
+must type EXIT to return from the shell to CPCFS. Contrary to other
 commands there is no space needed behind the "!".
 
 
-CD <dos-drive&path>              
-LCD <dos-dirve&path>              
+CD <dos-drive&path>
+LCD <dos-drive&path>
 	Change the current DOS drive and/or directory.
 	This is *not* equivalent to !CD.
 
@@ -243,7 +243,7 @@ Example:
 	CD C:\TEMP
 
 
-The "L" in LCD (as well as in LDIR) reminds you, that this command 
+The "L" in LCD (as well as in LDIR) reminds you, that this command
 affects the local filesystem of DOS.
 
 
@@ -328,7 +328,7 @@ See also:
 
 
 TYPE <options> <cpm-filename>
-	Writes the content of a file to the screen. If in binary mode or 
+	Writes the content of a file to the screen. If in binary mode or
 	binary mode is detected, the content is translated to hexadecimal.
 
 Example:
@@ -387,7 +387,7 @@ Note: To access a vortex image from a CPC emulator you need the vortex ROMS!
 
 See also:
 	sysgen	stat	dpb
-	
+
 
 DEL [-f] <cpm-filespec>...
 ERA [-f] <cpm-filespec>...
@@ -438,7 +438,7 @@ Example:
 COPY <options> <from-cpm-filename> <to-cpm-filename>
 COPY <options> <cpm-filespec>... <userarea>
 	The first form copies a file to a second file.
-	The second form copies a set of files to another user area with the 
+	The second form copies a set of files to another user area with the
 	same name.
 
 Example:
@@ -482,7 +482,7 @@ The following special characters are used to describe the syntax
 The following special identifier are used:
 	<cpm-filename>, <dos-filename>	a filename without wildcards
 	<cpm-filespec>, <dos-filespec>	a filename with/without wildcards
-	<userarea>			a user number out of 0..15 
+	<userarea>			a user number out of 0..15
 
 See also:
 	filenames	options
@@ -565,7 +565,7 @@ Example:
 
 
 PAGE <lines>
-	If you are using the internal pager (i.e. the environment variable 
+	If you are using the internal pager (i.e. the environment variable
 	PAGER is not set), this command sets the number of lines the pager
 	should display per screen.
 
@@ -582,7 +582,7 @@ and things are displayed without stops.
 FILENAMES
 ---------
 DOS filenames: <drive>:<path>\<root>.<extension>
-	* and ?, the normal DOS wildcards, are possible in <root> 
+	* and ?, the normal DOS wildcards, are possible in <root>
 	and <extension>.
 
 CP/M filenames: <userarea>:<root>.<extension>
@@ -592,7 +592,7 @@ Wildcards:
 	[a-z123]	a set of characters
 	[^0-9]		a negative set
 
-Note:	* may appear as user number => all users		
+Note:	* may appear as user number => all users
 
 Example: Files = {ABC.1, ABC.2, ABC.X, X.ABC, 1:USER.ONE}
 
@@ -622,7 +622,7 @@ The traditonal EMACS contol codes are also possible (^B, ^F, ^V, ^D, ^H,
 
 VALUES & PERCENT EXPANSION
 --------------------------
-Numbers:	in C syntax, i.e. decimal, octal with leading "0", 
+Numbers:	in C syntax, i.e. decimal, octal with leading "0",
 		hexadecimal with leading "0x".
 		Example: USER 15 = USER 017 = USER 0xF
 
@@ -660,7 +660,7 @@ FILES
 -----
 CPCFS.CFG
 	The commands in this file are executed every time CPCFS starts in
-	interactive mode. You can set the PROMPT here or open an often 
+	interactive mode. You can set the PROMPT here or open an often
 	used image or ...
 
 	CPCFS looks for it at first in the current directory and then in the
@@ -674,8 +674,8 @@ CPCFS.CFG
 	This is the default extension for CP/M tracks saved by GETCPM.BAS
 	and needed by SYSGEN.
 
-SEE ALSO 
--------- 
+SEE ALSO
+--------
 GETCPM.BAS, a Locomotive BASIC program to copy CP/M tracks off a
 diskette and save them to a file. Simply type it in your *original* CPC
 (you can leave out REMarks and PRINTs) and run it on a CP/M system disk.
@@ -723,38 +723,49 @@ The following inconsistencies are intentional:
 
 LEGAL STUFF
 -----------
-Copyright:
-CPCFS - CPCEmu Filessystem Maintenance, Version 0.85 (Feb. 96-Jan 98)
+CPCFS - CPCEmu Filessystem Maintenance, Version 0.85
 
-This program is Freeware and copyright by Derik van Zuetphen.
-You may distribute the whole package (zip-file), with or without an
-appropriate charge. You may not distribute changed versions.
+Copyright (c) 1997-2016, Derik van Zuetphen
+All rights reserved.
 
-** This software is provided "as-is". No warranties of any kind are made! **
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Please send bug reports to
-	derik@t-online.de
+	dz@426.ch
 
-If you want to see any modification or supplements to CPCFS, contact me
-and I possibly include them in the distribution.
 
 Trademarks:
 	"CPC", "Amsdos" is from Amstrad
-	"CP/M" is from Digital Research (now Novell) 
+	"CP/M" is from Digital Research (now Novell)
 	"Borland C" is from Borland
-	"ACTlib 1.7" is public domain and written by Marc Stern 
+	"ACTlib 1.7" is public domain and written by Marc Stern
 
 
 AUTHOR
 ------
 	Derik van Zuetphen
 
-	email:  derik.vanzuetphen@koeln.netsurf.de
-		(also: derik@t-online.de)
-	www:    http://home.t-online.de/home/derik
+	email:  dz@426.ch
+	www:    http://www.426.ch
 
-	The latest version of CPCFS and recent patches can be found on
-	my WWW page:
-
-		http://home.t-online.de/home/derik/cpcfs.htm
-
+	The latest version of CPCFS and recent patches can be found in my
+	Github repository on https://github.com/derikz/cpcfs

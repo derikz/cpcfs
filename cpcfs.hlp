@@ -55,7 +55,7 @@ Used environment variables:
 	TEMP		directory for temporary files (default: current)
 	COMSPEC		specifies the standard command processor for DOS
 
-PAGER must point to a program that expects its argument on the commandline, 
+PAGER must point to a program that expects its argument on the commandline,
 and not from stdin, so MORE.COM does not work. V. Buergs's famous LIST does
 not work the most time, I don't know why. I recommend LESS.
 
@@ -87,7 +87,7 @@ Used in commands:
 
 ~filenames~
 DOS filenames: <drive>:<path>\<root>.<extension>
-	* and ?, the normal DOS wildcards, are possible in <root> 
+	* and ?, the normal DOS wildcards, are possible in <root>
 	and <extension>.
 
 CP/M filenames: <userarea>:<root>.<extension>
@@ -97,7 +97,7 @@ Wildcards:
 	[a-z123]	a set of characters
 	[^0-9]		a negative set
 
-Note:	* may appear as user number => all users		
+Note:	* may appear as user number => all users
 
 Example: Files = {ABC.1, ABC.2, ABC.X, X.ABC, 1:USER.ONE}
 
@@ -135,16 +135,34 @@ Note: Options after -e are considered as options for CPCFS commands!
       Exitcodes are 0 (ok), 1 (error), or 2 (^C pressed)
 
 ~about~
-CPCFS - CPCEmu Filessystem Maintenance, Version 0.85 (Feb. 96-Jan 98)
+CPCFS - CPCEmu Filessystem Maintenance, Version 0.85
 
-This program is Freeware and copyright by Derik van Zuetphen.
-You may distribute the whole package (zip-file), with or without an
-appropriate charge. You may not distribute changed versions.
+Copyright (c) 1997-2016, Derik van Zuetphen
+All rights reserved.
 
-** This software is provided "as-is". No warranties of any kind are made! **
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Please send bug reports to
-	derik@t-online.de
+	dz@426.ch
 
 ~background~
 Record:		the smallest piece of data accessible by CP/M (128 bytes)
@@ -177,7 +195,7 @@ The following inconsistencies are intentional:
 	* your image file must not be readonly
 
 ~values~
-Numbers:	in C syntax, i.e. decimal, octal with leading "0", 
+Numbers:	in C syntax, i.e. decimal, octal with leading "0",
 		hexadecimal with leading "0x".
 		Example: USER 15 = USER 017 = USER 0xF
 
@@ -189,7 +207,7 @@ See also:
 
 ~put~
 PUT <options> <dos-filename> [<cpm-filename>]
-	Copies a file from DOS to CPC filesystem. If <cpm-filename> is 
+	Copies a file from DOS to CPC filesystem. If <cpm-filename> is
 	present, <dos-filename> is renamed to that name.
 PUT <options> <dos-filename> <userarea>:
 	Copies *one* file from DOS to a user area of the CP/M filesystem.
@@ -200,7 +218,7 @@ See also:
 
 ~get~
 GET <options> <cpm-filename> [<dos-filename>]
-	Copies a file from CPC to DOS filesystem. If <dos-filename> is 
+	Copies a file from CPC to DOS filesystem. If <dos-filename> is
 	present, <cpm-filename> is renamed while copying.
 GET <options> <cpm-filename>... <dos-path>
 	Copies some files form CPC to a DOS directory. <dos-path> must
@@ -254,7 +272,7 @@ Note: To access a vortex image from a CPC emulator you need the vortex ROMS!
 
 See also:
 	sysgen	stat	dpb
-	
+
 ~sysgen~
 SYSGEN <file>
 	Writes the CP/M-System from <file> to current image.
@@ -262,7 +280,7 @@ SYSGEN <file>
 Note: The image must be in system format!
 
 ~mode~
-MODE <mode>            
+MODE <mode>
 	Set transfer mode to either Binary, Text, or Auto.
 	  * Binary	the whole file is processed
 	  * Text	the file is processed up to the first Ctrl-Z
@@ -340,7 +358,7 @@ Example:
 COPY <options> <from-cpm-filename> <to-cpm-filename>
 COPY <options> <cpm-filespec>... <userarea>
 	The first form copies a file to a second file.
-	The second form copies a set of files to another user area with the 
+	The second form copies a set of files to another user area with the
 	same name.
 
 Example:
@@ -352,7 +370,7 @@ See also:
 
 ~type~
 TYPE <options> <cpm-filename>
-	Writes the content of a file to the screen. If in binary mode or 
+	Writes the content of a file to the screen. If in binary mode or
 	binary mode is detected, the content is translated to hexadecimal.
 
 Example:
@@ -428,8 +446,8 @@ See also:
 	!
 
 ~lcd~cd~
-CD <dos-drive&path>              
-LCD <dos-dirve&path>              
+CD <dos-drive&path>
+LCD <dos-drive&path>
 	Change the current DOS drive and/or directory.
 	This is *not* equivalent to !CD.
 
@@ -483,7 +501,7 @@ The following special characters are used to describe the syntax
 The following special identifier are used:
 	<cpm-filename>, <dos-filename>	a filename without wildcards
 	<cpm-filespec>, <dos-filespec>	a filename with/without wildcards
-	<userarea>			a user number out of 0..15 
+	<userarea>			a user number out of 0..15
 
 See also:
 	filenames	options
@@ -497,7 +515,7 @@ See also:
 
 ~page~
 PAGE <lines>
-	If you are using the internal pager (i.e. the environment variable 
+	If you are using the internal pager (i.e. the environment variable
 	PAGER is not set), this command sets the number of lines the pager
 	should display per screen.
 
@@ -565,4 +583,3 @@ CLS
 	Clear screen.
 
 ~end-of-help~
-

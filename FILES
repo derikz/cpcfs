@@ -1,0 +1,26 @@
+INTRO           <=== Start here!!!
+drop_tag.bat    Removing timestamp from image (for CPE)
+cpcfs.doc       Documentation for everything
+cpcfs.hlp       Online helpfile
+cpcfs.cfg       Startup commands for CPCFS
+src/            C code & project files
+getcpm.bas      Loco Basic program to read CP/M Tracks
+template.doc    Template for the documatation
+file_id.diz     Standard BBS description
+FILES           List of files
+LICENSE         BSD-2-Clause License
+
+src/cpcfs.c	the main sourcecode
+src/ui.c        routines for the user interface
+src/fs.c        routines for manipulating the filesystem
+src/tools.c     general routines for CPCFS
+src/cpcfs.h	some prototypes, constants, includes, and so on
+src/dos.h       Borland C specific header
+src/unix.h      Unix specific header
+src/dos.c       Borland C specific routines
+src/unix.c      unix specific routines
+src/match.c     some routines realising regular expression matching for CP/M wildcards
+src/match.h     header for regular expressions
+src/makedoc.c   merge cpcfs.hlp and template.doc to cpcfs.doc
+src/cpcfs.prj	project files for Borland C
+src/Makefile	Unix Makefile
