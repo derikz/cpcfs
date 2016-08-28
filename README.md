@@ -19,7 +19,7 @@ encountered the problem, how to copy files form DOS into the image of
 an emulator, or vice versa.
 
 The methods described in the documentation of CPCEmu only deal with
-transferring whole CPC disks to CPCEmu diskimages, but not single
+transferring whole CPC disks to CPCEmu disk images, but not single
 files.
 
 If you use CPCEmu you can use the cassette interface to load and save
@@ -34,7 +34,7 @@ my sense important) features, e.g.
 * you can't transfer files in a batch
 
 If you don't use another emulator than CPCEmu, I do not know another
-solotion other than CPCFS.
+solution other than CPCFS.
 
 ## What other products do I need?
 
@@ -45,7 +45,7 @@ solotion other than CPCFS.
 
 * Vortex images are supported
 * User areas, file attributes and wildcards are fully supported
-* Compfortable commandline interface including history, extensible help,
+* Comfortable command line interface including history, extensible help,
   and many options to each command
 * Special commands for getting an insight in the filesystem structure
 
@@ -55,10 +55,10 @@ solotion other than CPCFS.
 * COPY, REN, ERA, ATTRIB manipulate files within the image
 * TYPE shows the contents of files, either text or as hex dump
 * LDIR, LCD, ! (Shell escape) access your local PC
-* COMMENT describes your images or places a timestamp in it
+* COMMENT describes your images or places a time stamp in it
 
 *See the [INTRO](https://github.com/derikz/cpcfs/blob/master/INTRO) file for a
 complete overview*
 
 *Read the documentation in [cpcfs.doc](https://github.com/derikz/cpcfs/blob/master/cpcfs.doc)
-(it's already contained in the zipfile)*
+(it's already contained in the zip file)*
