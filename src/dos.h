@@ -1,27 +1,25 @@
 
-/*				<<<<Last Modified: Sun Jun 15 19:38:06 1997>>>>
+/*
 ------------------------------------------------------------------------------
 
-        =====
-        CPCFS  --  d o s . h   ---   Borland C specific header
-        =====
+    =====
+    CPCFS  --  d o s . h   ---   Borland C specific header
+    =====
 
-	Version 0.85                    (c) February '96 by Derik van Zuetphen
+	Version 0.85                    (c) Derik van Zuetphen
 ------------------------------------------------------------------------------
 */
 
 #ifndef DOS_H_INCLUDED
 #define DOS_H_INCLUDED
 
-
+#include <ctype.h>
 #include <dir.h>
 #include <string.h>
 #include <fcntl.h>
 #include <setjmp.h>
 #include <errno.h>
-#if USE_READLINE
 #include <conio.h>
-#endif
 
 #define SHELLVAR	"COMSPEC"
 #define SHELLDEFAULT	"c:\\command"
@@ -39,7 +37,7 @@ extern char Break_Wish;
 extern char	cwdbuffer[256];
 #define getwd(DUMMY)		getcwd(cwdbuffer,256)
 
-int break_handler();
+void break_handler();
 void disable_break();
 
 void save_path();
@@ -51,6 +49,7 @@ char *glob_next();
 int add_history(char*);
 
 char* tmp_nam(char*);
+char wait_for_key (int must_be_0, char must_be_TRUE);
 
 /* prototypes of getopt.c */
 extern int	optind;
@@ -58,6 +57,7 @@ extern char	*optarg;
 extern int	opterr;
 int getopt(int argc, char *argv[], char *optionS);
 
-
+int inputs( char *data, int maxLen, int timeout );
+void os_init();
 
 #endif

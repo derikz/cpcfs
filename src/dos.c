@@ -1,12 +1,12 @@
 
-/*					Time-stamp: <Sun Jun 15 19:37:44 1997>
+/*
 ------------------------------------------------------------------------------
 
-	=====
-	CPCFS  --  d o s . c   ---   Borland C specific routines
-	=====
+    =====
+    CPCFS  --  d o s . c   ---   Borland C specific routines
+    =====
 
-	Version 0.85                    (c) February '96 by Derik van Zuetphen
+    Version 0.85                    (c) Derik van Zuetphen
 ------------------------------------------------------------------------------
 */
 
@@ -18,21 +18,23 @@
 
 #include "cpcfs.h"
 
+#ifndef min
 #define min(A,B)	((A)<=(B)?(A):(B))
+#endif
+
 extern char Break_Wish;
 
 char	cwdbuffer[256];
 
 
-int break_handler() {
+void break_handler() {
 	Break_Wish = 1; /*TRUE*/;
-	return 1;   /* 0 = exit(); 1 = continue program */
 }
 
 void disable_break() {
-	ctrlbrk(break_handler);
+    signal (SIGINT,break_handler);
+	// ctrlbrk(break_handler);
 }
-
 
 char wait_for_key (int must_be_0, char must_be_TRUE) {
 /*   ^^^^^^^^^^^^ */
@@ -105,7 +107,6 @@ static char
 	return n;
 }
 
-
 char* tmp_nam(char* buf) {
 /*    ^^^^^^^
 Calls tmpnam() and prepends the value of the %TEMP environment variable.
@@ -124,10 +125,13 @@ char	name[INPUTLEN];
 
 
 void os_init() {
-/*   ^^^^^^^
-Nothing to do for DOS */
+/*   ^^^^^^^ */
+	// the screen is garbled, when 'screen buffer' (which is 300 by default)
+	// is greater than 255.
+	system("mode con lines=25");
 }
 
+int getkey(void);
 
 /**********************************************************************
 				History
@@ -177,7 +181,9 @@ char	*str;
 
 
 #define RETURN			0x0d
-#define ENTER                   RETURN
+#ifndef ENTER
+    #define ENTER                   RETURN
+#endif
 #define SPACE			0x20
 #define ESC			0x1b
 #define BKSP			0x08
@@ -381,7 +387,7 @@ int inputs( char *data, int maxLen, int timeout )
      if ( hist_used || len != oldLen )
 	{
 	 hist_used = False;
-	 gotoxy( Xpos, Ypos );
+	 gotoxy(Xpos, Ypos);
 	 cputs( data );
 	 for ( ; oldLen > len; oldLen-- ) cputs(" ");
 	 if ( oldLen < len ) oldLen = len;
@@ -401,27 +407,27 @@ int inputs( char *data, int maxLen, int timeout )
  _setcursortype( insert_mode ? _NORMALCURSOR : _SOLIDCURSOR );
 
 #pragma warn -sig
-     for ( x = curPos - data + Xpos, y = Ypos;
+	 for ( x = curPos - data + Xpos, y = Ypos;
 	   x > ti.screenwidth;
 	   x -= ti.screenwidth, y++
 	 );
-     gotoxy( x, y );
+	 gotoxy(x, y );
 #pragma warn .sig
 
-     switch( c = getkey() )
-     {
-      case LEFT:
-      case CTRL_B:
+	 switch( c = getkey() )
+	 {
+	  case LEFT:
+	  case CTRL_B:
 	 if ( curPos > data ) curPos--;
 	 break;
 
-      case RIGHT:
-      case CTRL_F:
+	  case RIGHT:
+	  case CTRL_F:
 	 if ( curPos < data + len ) curPos++;
 	 break;
 
-      case UP:
-      case CTRL_P:
+	  case UP:
+	  case CTRL_P:
 	 if (hist==-1) hist = hist_last;
 	 else          {hist--; hist = (hist<0? hist_size-1 : hist);}
 	 strcpy(data,history[hist]);
@@ -430,8 +436,8 @@ int inputs( char *data, int maxLen, int timeout )
 	 hist_used = True;
 	 break;
 
-     case DOWN:
-     case CTRL_N:
+	 case DOWN:
+	 case CTRL_N:
 	 if (hist==-1) break;
 	 else          hist = (hist+1)%hist_size;
 	 strcpy(data,history[hist]);
@@ -440,106 +446,106 @@ int inputs( char *data, int maxLen, int timeout )
 	 hist_used = True;
 	 break;
 
-      case HOME:
-      case CTRL_A:
+	  case HOME:
+	  case CTRL_A:
 	 curPos =  data;
 	 break;
 
-      case END:
-      case CTRL_E:
+	  case END:
+	  case CTRL_E:
 	 curPos = data + len;
 	 break;
 
-      case BACKSPACE:
+	  case BACKSPACE:
 	 if ( curPos > data )
-	    {
-	     strcpy( curPos - 1, curPos );
-	     curPos--;
-	     len--;
-	    }
+		{
+		 strcpy( curPos - 1, curPos );
+		 curPos--;
+		 len--;
+		}
 	 break;
 
-      case CTRL_D:
-      case DEL:
+	  case CTRL_D:
+	  case DEL:
 	 if ( curPos < data + len )
-	    {
-	     strcpy( curPos , curPos + 1 );
-	     len--;
-	    }
+		{
+		 strcpy( curPos , curPos + 1 );
+		 len--;
+		}
 	 break;
 
-      case INSERT:
-      case CTRL_V:
+	  case INSERT:
+	  case CTRL_V:
 	 insert_mode = ! insert_mode;
 	 _setcursortype( insert_mode ? _NORMALCURSOR : _SOLIDCURSOR );
 	 continue; /* break; */
 
-      case ESC :
-      case CTRL_U:
+	  case ESC :
+	  case CTRL_U:
 	 *data = '\0';
 	 curPos = data;
 	 len = 0;
 	 break;
 
-      case CTRL_Z:
-      case ENTER:
+	  case CTRL_Z:
+	  case ENTER:
 	 cputs( "\r\n" ); clreol();
 	 _setcursortype( _NORMALCURSOR );
 	 if (c==CTRL_Z) return -2;
 		   else return len;
 
-      case CTRL_END:
-      case CTRL_K:
+	  case CTRL_END:
+	  case CTRL_K:
 	 *curPos = '\0';
 	 len = strlen( data );
 	 break;
 
-      case CTRL_HOME:
+	  case CTRL_HOME:
 	 strcpy( data , curPos );
 	 curPos = data;
 	 len = strlen( data );
 	 break;
 
-      default:
+	  default:
 	 if ( c > 255 )
-	    {
-	     break;
-	    }
+	{
+	 break;
+	}
 
-         if ( firstkey )
-            {
-             *data = '\0';
-             curPos = data;
-             len = 0;
-             ungetch( c );
-             break;
-            }
+		 if ( firstkey )
+			{
+			 *data = '\0';
+			 curPos = data;
+			 len = 0;
+			 ungetch( c );
+			 break;
+			}
 
-         if ( ! insert_mode )
-            {
-             cprintf( "%c", c );
-             *curPos++ = c;
-             if ( curPos >= data + len )
-                {
-                 *curPos = '\0';
-                 len++;
-                }
-             break;
-            }
+		 if ( ! insert_mode )
+			{
+			 cprintf( "%c", c );
+			 *curPos++ = c;
+			 if ( curPos >= data + len )
+				{
+				 *curPos = '\0';
+				 len++;
+				}
+			 break;
+			}
 
-         if ( len == maxLen )
-            {
-	     break;
-            }
+		 if ( len == maxLen )
+			{
+		 break;
+			}
 
-         memmove( curPos + 1, curPos, strlen(curPos) + 1 );
-         *curPos++ = c;
-         len++;
-         break;
-      }
+		 memmove( curPos + 1, curPos, strlen(curPos) + 1 );
+		 *curPos++ = c;
+		 len++;
+		 break;
+	  }
 
-      firstkey = False;
-    }
+	  firstkey = False;
+	}
 }
 
 
@@ -547,7 +553,7 @@ int inputs( char *data, int maxLen, int timeout )
 /**********************************************************************
 	former name: GETKEY.C
  **********************************************************************/
- 
+
 /*  Copyright (C) 1993   Marc Stern  (internet: stern@mble.philips.be)  */
 
 #include <conio.h>
@@ -671,7 +677,7 @@ int	getopt(int argc, char *argv[], char *optionS)
 		if (0 == (ch = *(letP++))) {
 			optind++;  goto gopEOF;
 		}
-		if (':' == ch  ||  (optP = strchr(optionS, ch)) == NULL)  
+		if (':' == ch  ||  (optP = strchr(optionS, ch)) == NULL)
 			goto gopError;
 		if (':' == *(++optP)) {
 			optind++;
@@ -691,9 +697,9 @@ int	getopt(int argc, char *argv[], char *optionS)
 		return ch;
 	}
 gopEOF:
-	optarg = letP = NULL;  
+	optarg = letP = NULL;
 	return EOF;
- 
+
 gopError:
 	optarg = NULL;
 	errno  = EINVAL;

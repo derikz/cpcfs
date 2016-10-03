@@ -1,21 +1,22 @@
 
-/*				<<<<Last Modified: Sun Jun 15 19:38:51 1997>>>>
+/*
 ------------------------------------------------------------------------------
 
-        =====
-        CPCFS  --  u n i x . c   ---   Unix specific routines
-        =====
+    =====
+    CPCFS  --  u n i x . c   ---   Unix specific routines
+    =====
 
-	Version 0.85                    (c) February '96 by Derik van Zuetphen
+	Version 0.85                    (c) Derik van Zuetphen
 ------------------------------------------------------------------------------
 */
 
 
 #include <signal.h>
 #include <glob.h>
-#include <malloc.h>
+//#include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <termcap.h>
 #include <termios.h>
 #include <unistd.h>
@@ -72,21 +73,7 @@ char *glob_next () {
 	}
 }
 
-
-/* doesn't work */
-
-/*struct mstats core_statistics;*/
-
-long coreleft () {
-/*   ^^^^^^^^ */
-/*	core_statistics = mstats();
-	return core_statistics.bytes_free;*/
-	return 0;
-}
-
-
 char*	tmp_nam(char* buf) {	return tmpnam(buf);	}
-
 
 int raw () {
 /*  ^^^ */
@@ -105,7 +92,7 @@ dsec < 0	wait `-dsec' 1/10 seconds and answer then 0
 intr = TRUE	^C interrupts
 constraints:	-MAXINT < d(ezi)sec < 256
 Characters > 127 may cause trouble! (resetting the terminal??)
-I am using the POSIX termios structure, SYSV needs termio, BSD needs sgtty 
+I am using the POSIX termios structure, SYSV needs termio, BSD needs sgtty
 */
 
 struct termios	tio, save;
@@ -139,7 +126,7 @@ int	tty = 0;	/* stdin (must be console) */
 		sleep((-dsec+5)/10);
 		tcflush(tty,TCIFLUSH);		/* flush pending input */
 	}
-		
+
 /* reset terminal */
 	if (tcsetattr(tty,TCSANOW,&save)) perror(perr_str);
 	return answer;
@@ -214,4 +201,3 @@ struct termios tio;
 	}
 
 } /*os_init*/
-

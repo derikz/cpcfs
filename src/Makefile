@@ -1,18 +1,16 @@
-#				<<<<Last Modified: Sun Apr 13 12:38:59 1997>>>>
 
-CC	= gcc
-#CCOPT	= -g -DLINUX=1 -Wall -I/local/include
-CCOPT	= -g -DLINUX=1 -Wall
-#CCOPT	= -O2 -DLINUX=1
-LDOPT	= 
+CC	= cc
+CCOPT	= -g -DLINUX=1 -DUSE_READLINE=1 -Wall
+#CCOPT	= -O2 -DLINUX=1 -DUSE_READLINE=1
+LDOPT	=
 
 CFLAGS	= $(CCOPT)
-LDARGS	= $(LDOPT) -lreadline -lhistory -L /usr/lib/termcap -ltermcap 
+LDARGS	= $(LDOPT) -lreadline -lhistory -L /usr/lib/termcap -ltermcap
 
 HEADER=cpcfs.h unix.h
 OBJECTS=unix.o match.o tools.o fs.o ui.o cpcfs.o
 
-default: makedoc cpcfs 
+default: makedoc cpcfs
 
 cpcfs: $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) -o cpcfs $(LDARGS)
@@ -32,6 +30,11 @@ cpcfs.o: cpcfs.c $(HEADER)
 strip: cpcfs makedoc
 	strip cpcfs makedoc
 
-new:
-	touch $(HEADER)
+clean:
+	-rm -f *.o
+
+distclean: clean
+	-rm -f cpcfs makedoc
+
+new: distclean
 	make

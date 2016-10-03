@@ -1,18 +1,25 @@
 
-/*					Time-stamp: <98/01/10 15:52:20 derik>
+/*
 ------------------------------------------------------------------------------
 
-	=====
-	CPCFS  --   u i . c  --  Main program, and Text Interface
-	=====
+    =====
+    CPCFS  --   u i . c  --  Main program, and Text Interface
+    =====
 
-	Version 0.85                    (c) February '96 by Derik van Zuetphen
+    Version 0.85                    (c) Derik van Zuetphen
 ------------------------------------------------------------------------------
 */
 
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "cpcfs.h"
 
+#if DOS
+#include "dos.h"
+#endif
 
 /*********************************************************************
 			    Auxilaries
@@ -134,7 +141,7 @@ const char errmsg[] = "COMMENT [ -d | -n | <string> ]";
 	}
 
 	if (nbof_args!=1) return cmd_error(errmsg);
-	
+
 	if (arg[1][0]=='-') {
 		switch (tolower(arg[1][1])) {
 		case 'd':
@@ -205,7 +212,7 @@ char	optchar;
 		if (REMAINING_ARGS!=2) return cmd_error(errmsg);
 		upper(arg[optind]);
 		copy_file(arg[optind],arg[optind+1]);
-	}	
+	}
 
 	restore_force_mode();
 	return 0;
@@ -259,8 +266,8 @@ int cmd_dpb() {
 	if (nbof_args!=0)	return cmd_error("DPB");
 
 	printm(0,"Standard Disk Parameter Block:\n");
-	printm(0,"%s\n",repstr(hori,79));	
-	
+	printm(0,"%s\n",repstr(hori,79));
+
 	printm(0,"SPT = 0x%-2X = %-3u   \trecords per track\n",
 		dpb->SPT,dpb->SPT);
         printm(0,"BSH = 0x%1X = %-3u   \t2^BSH = records/block \n",
@@ -349,7 +356,7 @@ const char errmsg[] = "DUMP (-d | -m | (-b#|-h#|-t#|-s#|-1|-2)... ) "
 		break;
 	case 1:		/* pager */
 		tmp_nam(name);
-		file = fopen(name,"w");		
+		file = fopen(name,"w");
     		if (file==NULL) {
 			return errorf(TRUE,"Cannot open temporary file \"%s\" "
 							"for writing ",name);
@@ -361,7 +368,7 @@ const char errmsg[] = "DUMP (-d | -m | (-b#|-h#|-t#|-s#|-1|-2)... ) "
 									name);
 		}
 	}
-	
+
 /* adjust addresses */
 	blk[0] = max(0,blk[0]);
 	hd[0]  = max(0,hd[0]);
@@ -372,16 +379,22 @@ const char errmsg[] = "DUMP (-d | -m | (-b#|-h#|-t#|-s#|-1|-2)... ) "
 	hd[1]  = min(dpb->HDS-1,hd[1]);
 	trk[1] = min(dpb->TRKS-1,trk[1]);
 	sec[1] = min(dpb->SECS-1,sec[1]);
-	
+
 	if (blk[1]==-1) blk[1]=blk[0];
-	if (hd[1]==-1)  hd[1] =hd[0];	
-	if (trk[1]==-1)
-		if (hd[1]==hd[0]) trk[1]=trk[0];
-		else		  trk[1]=dpb->TRKS-1;
-	if (sec[1]==-1)
-		if (trk[1]==trk[0]) sec[1]=sec[0];
-		else		    sec[1]=dpb->SECS-1;
-	
+	if (hd[1]==-1)  hd[1] =hd[0];
+	if (trk[1]==-1) {
+	  if (hd[1]==hd[0])
+	    trk[1]=trk[0];
+	  else
+	    trk[1]=dpb->TRKS-1;
+	}
+	if (sec[1]==-1) {
+	  if (trk[1]==trk[0])
+	    sec[1]=sec[0];
+	  else
+	    sec[1]=dpb->SECS-1;
+	}
+
 /* do the output */
 	switch (what) {
 	case 0:		/* blkdump */
@@ -412,7 +425,7 @@ const char errmsg[] = "DUMP (-d | -m | (-b#|-h#|-t#|-s#|-1|-2)... ) "
 		map(file);
 		break;
 	}
-	
+
 	fflush(file);
 	if (how!=0) fclose(file);	/* do not close stdout */
 	if (how==1) {
@@ -422,7 +435,7 @@ const char errmsg[] = "DUMP (-d | -m | (-b#|-h#|-t#|-s#|-1|-2)... ) "
 		}
 		unlink(name);
 	}
-	
+
 	return 0;
 }
 
@@ -434,7 +447,7 @@ int cmd_echo () {
 	}
 
 	if (nbof_args == 1)  {
-		echom(0,arg[1]);	
+		echom(0,arg[1]);
 	}
 	putcharm(0,10);
 	return 0;
@@ -510,7 +523,7 @@ char	path[INPUTLEN];
 char	root[INPUTLEN];
 char	ext[INPUTLEN];
 long	done;
-char	*src;
+char	*src = "";
 int	i;
 const char errmsg[] = "\tGET [-f | -t | -b] <cpm-filename> [<dos-filename>]\n"
 		      "\tGET [-f | -t | -b] <cpm-filename>... <dos-path>";
@@ -550,7 +563,7 @@ char	optchar;
 			return 1;
 		}
 		for (i=optind;i<nbof_args;i++) {
-			parse_cpm_filename(arg[i],&user,root,ext);		
+			parse_cpm_filename(arg[i],&user,root,ext);
 			build_cpm_name(src,user,root,ext);
 
 			if (drive>0)	{trg[0] = drive+'@'; trg[1]=0;}
@@ -558,15 +571,15 @@ char	optchar;
 			strcat(trg,path);
 			strcat(trg,root);
 			if (*ext)	{strcat(trg,"."); strcat(trg,ext);}
-		
+
 			printm(2,"Getting \"%s\": ",src);
 			done = get (src,trg);
 			if (done>=0)
 				printm(2,"%ld Bytes\n",done);
 			else
 				printm(2,"[skipped]\n");
-		}					
-		
+		}
+
 	} else {	/* one or two args */
 		src = arg[optind];
 		if (REMAINING_ARGS==1) {
@@ -578,7 +591,7 @@ char	optchar;
 			lower(trg);
 		} else
 			strcpy(trg,arg[optind+1]);
-	
+
 		printm(2,"Getting \"%s\": ",src);
 		done = get (src,trg);
 		if (done>=0)
@@ -625,7 +638,7 @@ bool	ok = FALSE;
 		if (!found&& line[0]!='~') continue;
 		if (!found&& line[0]=='~') found = (strstr(line,topic)!=NULL);
 	}
-	
+
 	fclose(file);
 
 	if (!ok) {
@@ -734,7 +747,7 @@ char	optchar;
 		return cmd_error(errmsg);
 
 	set_force_mode(local_force,local_mode);
-	
+
 	for (i=optind;i<=nbof_args;i++) {
 		ent = glob_cpm_file(arg[i]);
 		if (ent<0) {
@@ -747,7 +760,7 @@ char	optchar;
 							directory[ent].name);
 
 /* prepare DOS name */
-			strcpy(trg,(signed char*)directory[ent].name);
+			strcpy(trg,(char*)directory[ent].name);
 			lower(trg);
 			if (trg[strlen(trg)-1]=='.') trg[strlen(trg)-1]=0;
 
@@ -853,7 +866,7 @@ int	i;
 				strcat(trg,".");
 				strcat(trg,extension);
 			}
-	
+
 			printm(2,"Putting \"%s\": ",src);
 			done = put(src,trg);
 			if (done>=0) {
@@ -1069,7 +1082,7 @@ const char errmsg[] = "\tREN <from-cpm-filespec> <to-cpm-filespec>\n"
 
 	parse_cpm_filename(arg[nbof_args],&trg_user,root,ext);
 	if (*root==0) {
-		if (trg_user==-1) trg_user = cur_user;		
+		if (trg_user==-1) trg_user = cur_user;
 		if (trg_user==-2)
 			return errorf(FALSE,"No wildcards allowed in user");
 		for (i=1;i<nbof_args;i++) {
@@ -1296,7 +1309,7 @@ const char errmsg[] = "TYPE [-f <dos-filename> | -c | -t | -b] <cmp-filename>";
 
 	r=read(tempfile,buf,(dpb->BLS));
 	if (local_mode==M_AUTO) {
-		local_mode = detectmode((signed char*)buf,max((dpb->BLS),r));
+		local_mode = detectmode((char*)buf,max((dpb->BLS),r));
 	}
 
 	while (r>0) {
@@ -1444,7 +1457,7 @@ int	i;
 	nbof_args=0;
 	if (!line) return 0;
 	for (;;) {
-		while ((*line==' ')||(*line=='\n')||(*line=='\t'))
+		while ((*line==' ')||(*line=='\n')||(*line=='\t')||*line=='\r')
 			line++;				/*skip white*/
 		if (*line==0) break;
 		if (*line=='#') break;			/*comment*/
@@ -1468,7 +1481,7 @@ int	i;
 			*line++ = 0;			/* replace quote */
 		} else {
 			while (*line!=' ' && *line!='\n' && *line!='\t'
-			  && *line!=0)
+			  && *line!=0 && *line!='\r')
 				line++;
 			if (*line==0) break;
 			else *line++=0;			/*set end-of-arg*/
@@ -1568,7 +1581,7 @@ FILE	*file;
 char	line[INPUTLEN];
 
 	if ((file=fopen(name,"r")) == NULL) {
-		return errorf(TRUE,"\"%s\" not found",name); 
+		return errorf(TRUE,"\"%s\" not found",name);
 	}
 	while (fgets(line,INPUTLEN,file))
 		execute_cmd(line);
@@ -1639,7 +1652,8 @@ char	line[INPUTLEN];
 		execute_cmd(line);
 #else  /* ! USE_READLINE */
 		echom(1,prompt);
-		execute_cmd(gets(line));
+		if (fgets(line,INPUTLEN,stdin))
+			execute_cmd(line);
 #endif
 	}
 }
@@ -1656,7 +1670,7 @@ char	buf[INPUTLEN];
 		expand_percent("%V",buf,INPUTLEN);
 		printm(1,"   %s\n\n",buf);
 		printm(1,"SYNOPSIS:\n");
-		printm(1,"   cpcfs                  Enter interactive mode\n");	
+		printm(1,"   cpcfs                  Enter interactive mode\n");
 		printm(1,"or ");
 	}
 	printm(1,"cpcfs [<imagefile>] <command>...\n");
@@ -1697,7 +1711,7 @@ bool	more_switches = TRUE;
 		Interactive = TRUE;
 		interaction(argv[0]);
 		exit(0);
-	}	
+	}
 
 	Interactive = FALSE;
 /* only filename => dir all */

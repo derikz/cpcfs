@@ -1,12 +1,12 @@
 
-/*					Time-stamp: <98/01/10 15:52:38 derik>
+/*
 ------------------------------------------------------------------------------
 
-        =====
-        CPCFS  --  c p c f s . h	Variable, Structures, Prototypes
-        =====
+    =====
+    CPCFS  --  c p c f s . h	Variable, Structures, Prototypes
+    =====
 
-	Version 0.85                    (c) February '96 by Derik van Zuetphen
+	Version 0.85                    (c) Derik van Zuetphen
 ------------------------------------------------------------------------------
 */
 
@@ -21,7 +21,6 @@
 #include <signal.h>
 #include <time.h>
 #include "match.h"
-
 
 
 /****** Configure here! (or in Makefile) ******/
@@ -39,16 +38,14 @@ Options menu. */
 
 
 #ifndef USE_READLINE
-#define USE_READLINE	1	/* either GNU "readline" or ACTlib17 "inputs" */
+#define USE_READLINE	0	/* either GNU "readline" or ACTlib17 "inputs" */
 #endif
 
 /****** End of configuration ******/
 
 #define MAJORVERSION	0
 #define MINORVERSION	85
-#define PATCHLEVEL	3
-#define STAMP		__DATE__ ## " " ## __TIME__
-extern char stamp[];
+#define PATCHLEVEL	4
 
 
 /****** Operating System ******/
@@ -94,7 +91,7 @@ typedef enum {	SYSTEMFORMAT=0x41,
 /* FORMATDIFF Must be less than all differences between Format_IDs. This
 constant is used to detect the type of interleaved formats. */
 
-#define FORMATDIFF 0x20		
+#define FORMATDIFF 0x20
 
 
 #define RECORDSIZE	128	/* 1/8 kByte, constant for CP/M */
@@ -154,7 +151,7 @@ extern int	Verb;
 
 /****** Utility Macros ******/
 /* Answer a plural suffix, if nr is not 1 */
-#define plural(nr)	((nr)==1?"":"s")	
+#define plural(nr)	((nr)==1?"":"s")
 #define plural_y(nr)	((nr)==1?"y":"ies")
 #define atoxi(CP)	(int)strtol((CP),NULL,0)
 			/* same as atoi, but recognizes 0x and 0 prefixes */
@@ -285,9 +282,9 @@ typedef struct {
 	ushort SEC1;/* 1. SECtor number (0, >1, >41h, >C1h) */
 	ushort SECS;/* number of sectors per track (8, >9) */
 	ushort TRKS;/* number of tracks per side (>40, 80) */
-	ushort HDS; /* number of heads per disk (>1, 2) */	
+	ushort HDS; /* number of heads per disk (>1, 2) */
 	ushort BPS; /* Bytes Per Sector (128, 256, >512, 1024) */
-	
+
 /* original Disk Parameter Block (> marks CPC defaults) */
 	ushort SPT; /* records Per Track (18, 20, 30, 32, 34, >36, 40) */
 	uchar  BSH; /* Block SHift ...      2^BSH = BLM+1 = Rec/Block */
@@ -392,7 +389,7 @@ int  open_image(char *name);
 int  format(char* name,DPB_type *dpb);
 int  sysgen(char* name);
 int  comment_image(const char *text);
-	
+
 /********
   Blocks
  ********/

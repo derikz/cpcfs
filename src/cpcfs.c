@@ -1,12 +1,12 @@
 
-/*					Time-stamp: <98/01/10 14:08:18 derik>
+/*
 ------------------------------------------------------------------------------
 
-	=====
-	CPCFS -- CPCEmu Filesystem Maintenance
-        =====                   especially for CPCEmu
+    =====
+    CPCFS -- CPCEmu Filesystem Maintenance
+    =====    especially for CPCEmu
 
-	Version 0.85                    (c) February '96 by Derik van Zuetphen
+    Version 0.85                    (c) Derik van Zuetphen
 ------------------------------------------------------------------------------
 */
 
@@ -59,7 +59,7 @@ int	Verb = 9;
 
 DirEntry *directory = (DirEntry*)NULL;
 
-char stamp[] = "Compiled: " STAMP ", (C) 1995-98 Derik van Zuetphen";
+char stamp[] = "(C) 1995-98 Derik van Zuetphen";
 
 
 /****** Disk Parameter Block ******/
@@ -154,7 +154,7 @@ DPB_type DPB_store[DPB_store_size] = {
 DPB_type *dpb = NULL;	/* pointer to current DPB */
 
 
-void main (int argc, char **argv) {
+int main (int argc, char **argv) {
 int	ui_main (int,char**);
 	ui_main (argc,argv);
 	exit(0);

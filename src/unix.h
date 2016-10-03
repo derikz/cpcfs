@@ -1,12 +1,12 @@
 
-/*				<<<<Last Modified: Sun Jun 15 19:38:56 1997>>>>
+/*
 ------------------------------------------------------------------------------
 
-        =====
-        CPCFS  --  u n i x . h   ---   Unix specific header
-        =====
+    =====
+    CPCFS  --  u n i x . h   ---   Unix specific header
+    =====
 
-	Version 0.85                    (c) February '96 by Derik van Zuetphen
+	Version 0.85                    (c) Derik van Zuetphen
 ------------------------------------------------------------------------------
 */
 
@@ -27,7 +27,7 @@
 #define PAGERDEFAULT	"more"
 #define LDIRCOMMAND	"ls -l"
 #define DIRSEPARATOR	'/'
-#define FIRST_OPTIND	0
+#define FIRST_OPTIND	1
 #define O_BINARY	0		/* dummy to make DOS happy */
 #define ENTER		10		/* keycode */
 
@@ -43,7 +43,6 @@ void disable_break();
 char *glob_file(char *pattern);
 char *glob_next();
 
-long coreleft();
 char*	tmp_nam(char*);		/* because DOS' tmpnam() ignores $TEMP */
 
 char wait_for_key (int,char);

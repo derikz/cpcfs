@@ -1,15 +1,21 @@
 
-/*					Time-stamp: <98/01/10 14:09:06 derik>
+/*
 ------------------------------------------------------------------------------
 
-	=====
-	CPCFS  --  t o o l s . c  --  Auxiliary functions
-	=====
+    =====
+    CPCFS  --  t o o l s . c  --  Auxiliary functions
+    =====
 
-	Version 0.85                    (c) February '96 by Derik van Zuetphen
+    Version 0.85                    (c) Derik van Zuetphen
 ------------------------------------------------------------------------------
 */
 
+#include <errno.h>
+
+#if DOS
+#include "conio.h"
+#include "dos.h"
+#endif
 
 #include "cpcfs.h"
 
@@ -40,10 +46,8 @@ void putcharm(int verb, char ch)  {
 /*   ^^^^^^^^ */
 	if (Verb >= verb) putchar(ch);
 }
- 
- 
 
- 
+
 char *lower(char *s)  {
 /*    ^^^^^ */
 char	*p=s;
@@ -64,7 +68,7 @@ char	*p=s;
 	return p;
 }
 
- 
+
 char *append_suffix (char *name, char *suffix) {
 /*    ^^^^^^^^^^^^^
 Appends <suffix> to <name>, but not if the name already ends with <suffix>.
@@ -75,7 +79,7 @@ char	*p, *ds, *dot;
 	ds=dot=NULL;
 	while (*p) {
 		if (*p==DIRSEPARATOR)	ds=p;
-		if (*p=='.')		dot=p;			
+		if (*p=='.')		dot=p;
 		p++;
 	}
 	if ((dot==NULL)||(dot<ds)) {
@@ -84,8 +88,8 @@ char	*p, *ds, *dot;
 	}
 	return name;
 }
- 
- 
+
+
 int errorf (bool perr,const char *fmt, ...) {
 /*  ^^^^^^
 Writes a formatted errormessage to stderr and appends a system errormessage
@@ -99,7 +103,7 @@ va_list	args;
 	vfprintf(stderr,fmt,args);
 	va_end(args);
 	if (perr) {
-#if UNIX	
+#if UNIX
 		fprintf(stderr,": ");
 #endif
 /* DOS put always a colon before the error message, UNIX only if the argument
@@ -405,8 +409,8 @@ char	*t, *t0;
 					t+=sprintf(t,"%d.%d.%d",
 					MAJORVERSION,MINORVERSION,PATCHLEVEL);
 				  break;
-			case 'V': t+=sprintf(t,"%d.%d.%d (%s)",
-				MAJORVERSION,MINORVERSION,PATCHLEVEL,stamp);
+			case 'V': t+=sprintf(t,"%d.%d.%d",
+				MAJORVERSION,MINORVERSION,PATCHLEVEL);
 				  break;
 			case '%': *t++='%'; break;
 			case '_': *t++=' '; break;
@@ -418,13 +422,8 @@ char	*t, *t0;
 			case 's':
 			case 'S': *t++=';'; break;
 			case 'M':
-#if DOS
-				t+=sprintf(t,"%u",coreleft()); break;
-					/* "%lu" if model > medium */
-#else
-				t+=sprintf(t,"%lu",coreleft()); break;
-					/* coreleft is def'ed in unix.c */
-#endif
+                /*	showing the free memory is not the duty of an application these days. */
+				t+=sprintf(t,"%lu",0L); break;
 			default : *t++='%'; *t++=*from; break;
 			}
 		}
@@ -515,7 +514,7 @@ int	i;
 /* scan extension part */
 	if (*p) strcpy(ext,p+1);
 
-	
+
 /* convert to upper case */
 	upper(root);
 	upper(ext);
@@ -536,7 +535,7 @@ Errorcode is 1 on error
 */
 char	*p;	/* temp pointer */
 #if DOS
-char	*r, *q;
+char	*r;
 int	i;
 #endif
 
@@ -574,8 +573,6 @@ int	i;
 		*r++ = *name++;
 	}
 	*r=0;
-	q=strchr(p,'.');
-	if (q) p=q;
 
 /* scan extension part */
 	if (*name) strncpy(ext,name+1,4);
@@ -611,7 +608,7 @@ char	key;
 		if (key=='r') {
 			fseek(file,0L,SEEK_SET);
 		}
-		if (key=='q') break;	
+		if (key=='q') break;
 	}
 	fclose(file);
 	return 0;
@@ -669,7 +666,7 @@ if <user> = -2, a * (wild user) is prepended.
 If <ext> = "", the last char is "."!
 <buf> must point to memory of at least 3+1+8+1+3+1=17 Byte (UUU:RRRRRRRR.EEE0).
 */
-	
+
 	*buf = 0;
 	if (user==-2) strcpy(buf,"*:");
 	if (user>=0) sprintf(buf,"%d:",user);
@@ -748,4 +745,4 @@ uchar	c;
 	}
 /*	*(p++) = '\n';*/
 	return line;
-}	
+}

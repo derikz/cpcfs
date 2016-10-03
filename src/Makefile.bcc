@@ -1,0 +1,39 @@
+
+# build with:
+# c:\bcc101\bin\make -f Makefile.bcc
+
+CC	= c:\bcc101\bin\bcc32c.exe
+CFLAGS	= -DDOS=1 -DUSE_READLINE=0   # or set in cpcfs.h instead
+LD      = c:\bcc101\bin\bcc32c.exe
+LDFLAGS	=
+MAKE    = c:\bcc101\bin\make.exe
+
+HEADER=cpcfs.h dos.h match.h
+OBJECTS=dos.obj match.obj tools.obj fs.obj ui.obj cpcfs.obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $&.c
+
+default: makedoc.exe cpcfs.exe
+
+cpcfs.exe: $(OBJECTS)
+	$(LD) $(LDFLAGS) $(OBJECTS) -o cpcfs.exe
+
+makedoc.exe: makedoc.c
+	$(LD) $(LDFLAGS) makedoc.c -o makedoc.exe
+
+cpcfs.obj: cpcfs.c $(HEADER)
+dos.obj: dos.c $(HEADER)
+fs.obj: fs.c $(HEADER)
+match.obj: match.c $(HEADER)
+tools.obj: tools.c $(HEADER)
+ui.obj: ui.c $(HEADER)
+
+clean:
+    del *.il? *.obj *.tds *.map
+
+distclean: clean
+    del cpcfs.exe makedoc.exe
+
+new: distclean
+	$(MAKE) -f Makefile.bcc

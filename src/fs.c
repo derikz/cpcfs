@@ -1,19 +1,26 @@
 
-/*					Time-stamp: <98/01/10 14:08:41 derik>
+/*
 ------------------------------------------------------------------------------
 
-	=====
-	CPCFS  --  f s . c  --	Manageing the Filesystem
-	=====
+    =====
+    CPCFS  --  f s . c  --	Managing the Filesystem
+    =====
 
-	Version 0.85		  	(c) February '96 by Derik van Zuetphen
+    Version 0.85		  	(c) Derik van Zuetphen
 ------------------------------------------------------------------------------
 */
 
+#if DOS
+#include <io.h>
+#endif
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include <sys/stat.h>
 
 #include "cpcfs.h"
-
+#include "match.h"
 
 /****** Variables ******/
 
@@ -24,7 +31,7 @@ int	cur_blk = -1;
 
 bool tag_ok () {
 /*   ^^^^^^ */
-	return	(strncmp("MV - CPC",(signed char*)disk_header.tag,8)==0);
+	return	(strncmp("MV - CPC",(char*)disk_header.tag,8)==0);
 }
 
 
@@ -145,7 +152,7 @@ void abandonimage() {
 	if (track)	{free(track); track=NULL;}
 	if (blk_alloc)	{free(blk_alloc); blk_alloc=NULL;}
 	if (directory)	{free(directory); directory=(DirEntry*)NULL;}
-	if (block_buffer){free(block_buffer); block_buffer=(uchar*)NULL;}       
+	if (block_buffer){free(block_buffer); block_buffer=(uchar*)NULL;}
 	errorf(FALSE,"Image \"%s\" abandoned!",imagename);
 }
 
@@ -297,7 +304,7 @@ int	filled = 0;
 		if (next_sector (&hd,&trk,&sec)) write_track();
 	}
 	write_track();
-	return buf;
+	return (uchar*)buf;
 }
 
 
@@ -325,10 +332,10 @@ uchar	name[20];
 
 	for (i=last_entry[glob_env]+1;i<=dpb->DRM;i++) {
 		if (!directory[i].first) continue;
-		build_cpm_name_32((signed char*)name, directory[i].user,
-				  (signed char*)directory[i].root,
-				  (signed char*)directory[i].ext);
-		if (match((signed char*)pattern[glob_env],(signed char*)name)) {
+		build_cpm_name_32((char*)name, directory[i].user,
+				  (char*)directory[i].root,
+				  (char*)directory[i].ext);
+		if (match((char*)pattern[glob_env],(char*)name)) {
 			last_entry[glob_env] = i;
 			return i;
 		}
@@ -349,22 +356,22 @@ int	user;
 uchar	root[INPUTLEN], ext[INPUTLEN];
 const char errmsg[] = "Illegal filename \"%s\"";
 
-	if (parse_cpm_filename(pat,&user,root,ext))
+	if (parse_cpm_filename(pat,&user,(char*)root,(char*)ext))
 		return errorf(FALSE,errmsg,pat);
-	upper(root);
-	upper(ext);
+	upper((char*)root);
+	upper((char*)ext);
 	if (*root==0) {
 		if (user >= 0) {
-			strcpy(root,"*");
-			strcpy(ext,"*");
+			strcpy((char*)root,"*");
+			strcpy((char*)ext,"*");
 		} else {
 		return errorf(FALSE,errmsg,pat);
 
 		}
 	}
 	if (user==-1) user = cur_user;
-	build_cpm_name((signed char*)pattern[glob_env], user,
-		(signed char*)root, (signed char*)ext);
+	build_cpm_name((char*)pattern[glob_env], user,
+		(char*)root, (char*)ext);
 	last_entry[glob_env] = -1;	/* thus start with 0 */
 	return glob_cpm_next();
 }
@@ -397,9 +404,9 @@ struct pair	*map;
 /****** packing a name of kind "FOO	BAR" to "FOO.BAR\0" ******/
 	for (i=0;i<=dpb->DRM;i++) {
 		if (directory[i].user == 0xE5) continue;
-		build_cpm_name_32((signed char*)directory[i].name, -1,
-				  (signed char*)directory[i].root,
-				  (signed char*)directory[i].ext);
+		build_cpm_name_32((char*)directory[i].name, -1,
+				  (char*)directory[i].root,
+				  (char*)directory[i].ext);
 	}
 
 
@@ -429,8 +436,8 @@ struct pair	*map;
 			if ((directory[j].size == -1) &&
 			    (directory[j].user == directory[i].user) &&
 			    (i!=j) &&
-			    (strcmp((signed char*)directory[i].name,
-				    (signed char*)directory[j].name)==0)) {
+			    (strcmp((char*)directory[i].name,
+				    (char*)directory[j].name)==0)) {
 					map[j].ex = directory[j].extent;
 					directory[j].size = 0;
 			}
@@ -455,7 +462,7 @@ struct pair	*map;
 			(long)directory[map[j-1].en].extent * EXTENTSIZE
 			+ directory[map[j-1].en].rec * RECORDSIZE;
 
-		
+
 	} /* for i */
 
 	free(map); map=NULL;
@@ -476,9 +483,9 @@ int	mask;
 /* user, name, ... */
 		directory[i].user	= buf[off+0];
 		for (j=0;j<8;j++) directory[i].root[j] = buf[off+j+1] & 0x7F;
-		for (j=0;j<3;j++) directory[i].ext[j]  = buf[off+j+9] & 0x7F;   
+		for (j=0;j<3;j++) directory[i].ext[j]  = buf[off+j+9] & 0x7F;
 		directory[i].name[0]	= 0;
-	        
+
 		directory[i].extent	= buf[off+12];
 		directory[i].unused[0]	= buf[off+13];
 		directory[i].unused[1]	= buf[off+14];
@@ -508,7 +515,7 @@ int	mask;
 
 	update_directory();
 	for (i=0;i<dpb->DBL;i++) alloc_block(i,0); /* 0 is not correct! */
-        
+
 /* marking the blocks as allocated */
 	for (j=0;j<=dpb->DSM;j++) free_block(j);
 	for (i=0;i<=dpb->DRM;i++) {
@@ -529,14 +536,14 @@ int	block;
 
 	printm(10,"[wd] ");
 	buf = block_buffer;	/* simply a shortcut */
-        
+
 	block = 0;
 	for (i=0;i<=dpb->DRM;i++) {
 		off=i*32 % dpb->BLS;
 
 		buf[off] = directory[i].user;
 		for (j=0;j<8;j++) buf[off+j+1] = directory[i].root[j];
-		for (j=0;j<3;j++) buf[off+j+9] = directory[i].ext[j];   
+		for (j=0;j<3;j++) buf[off+j+9] = directory[i].ext[j];
 
 		buf[off+12] = directory[i].extent;
 		buf[off+13] = directory[i].unused[0];
@@ -563,7 +570,7 @@ int	block;
 
 /* if next entry is in the next block, then write the current block */
 		if ((i+1)*32/(signed)dpb->BLS > block) {
-			write_block(block,buf);
+			write_block(block,(char*)buf);
 			block++;
 		}
 	}
@@ -594,10 +601,10 @@ Complete the extension parts of <dpb>. <track> must be read in first!
 
 	dpb->DSM = (dpb->TRKS*dpb->HDS*dpb->SECS) / (dpb->BLS/dpb->BPS) - 1;
 /* subtract reserved tracks */
-	dpb->DSM -= dpb->OFS * dpb->SECS / (dpb->BLS/dpb->BPS); 
+	dpb->DSM -= dpb->OFS * dpb->SECS / (dpb->BLS/dpb->BPS);
 /* subtract one for a slack block, because neither 18/8 nor 9/2 is integral: */
-	dpb->DSM--;	
-	
+	dpb->DSM--;
+
 	if (dpb->DSM>=255) {
 /* 2 byte pointer and 8 pointer per entry */
 		BLKNR_SIZE = 2;
@@ -607,7 +614,7 @@ Complete the extension parts of <dpb>. <track> must be read in first!
 		BLKNR_SIZE = 1;
 		BLKNR = 16;
 	}
-}       
+}
 
 
 void close_image() {
@@ -619,7 +626,7 @@ void close_image() {
 		free(blk_alloc);	blk_alloc=NULL;
 		free(track);		track=NULL;
 		free(directory);	directory=(DirEntry*)NULL;
-		free(block_buffer);	block_buffer=(uchar*)NULL;	        
+		free(block_buffer);	block_buffer=(uchar*)NULL;
 		*disk_header.tag = 0;
 		dpb = NULL;
 		close(imagefile);
@@ -662,10 +669,10 @@ char	*p;
 		abandonimage();
 		return -1;
 	}
-	        
+
 /* allocate memory */
 	track = Malloc(disk_header.tracksize);
-        
+
 /* set up varaibles */
 	filler = 0xE5;
 	cur_user=0;
@@ -682,10 +689,10 @@ char	*p;
 	if((imagename=strrchr(full_imagename,DIRSEPARATOR)))
 		imagename++;
 	else	imagename=full_imagename;
-        
+
 /* determine system/data-disk */
-	read_track(0,0);	
-	cur_format = ((struct t_header*)track)->sector[0].sector; 
+	read_track(0,0);
+	cur_format = ((struct t_header*)track)->sector[0].sector;
 
 	if (cur_format>=SYSTEMFORMAT && cur_format<SYSTEMFORMAT+FORMATDIFF)
 		cur_format=SYSTEMFORMAT;
@@ -723,7 +730,7 @@ char	*p;
 
 /* allocate block buffer */
 	block_buffer = (uchar*)Malloc(dpb->BLS);
-        
+
 /* get directory information */
 	get_directory();
 	calc_allocation();
@@ -833,11 +840,11 @@ int	res;
 	if (directory[*x].user < directory[*y].user)		res = -1;
 	else if (directory[*x].user > directory[*y].user)	res = 1;
 	else {
-		res = strncmp((signed char*)directory[*x].root,
-			      (signed char*)directory[*y].root, 8);
+		res = strncmp((char*)directory[*x].root,
+			      (char*)directory[*y].root, 8);
 		if (res==0)
-			res = strncmp((signed char*)directory[*x].ext,
-				      (signed char*)directory[*y].ext, 3);
+			res = strncmp((char*)directory[*x].ext,
+				      (char*)directory[*y].ext, 3);
 	}
 	return res;
 }
@@ -863,7 +870,7 @@ int	files;
 int	mode;
 int	*array; 		/* temporary dynamic array */
 char	upbuffer[INPUTLEN];	/* buffer for upper case conversion*/
-char	*buf;
+uchar	*buf;
 int	user;
 char	root[INPUTLEN];
 char	ext[INPUTLEN];
@@ -966,12 +973,12 @@ the requested order */
 	case DIR_WIDE:
 		printm(0,"Name          Size %c"
 			 "Name          Size %c"
-			 "Name          Size %c"			 
+			 "Name          Size %c"
 			 "Name          Size\n",vert,vert,vert);
 		nextline();
 		printm(0,"%s%c",repstr(hori,19),cross);
 		printm(0,"%s%c",repstr(hori,19),cross);
-		printm(0,"%s%c",repstr(hori,19),cross);		
+		printm(0,"%s%c",repstr(hori,19),cross);
 		printm(0,"%s\n",repstr(hori,19));
 		nextline();
 		while (array[i]<0xFFF) {
@@ -1000,7 +1007,7 @@ the requested order */
 			if (amsdos_header.flag==0) {
 				printm(0,"Empty");
 			} else if (amsdos_header.flag==1) {
-				if (strncmp((signed char*)
+				if (strncmp((char*)
 				  directory[array[i]].ext,"COM",3)==0)
 					printm(0,"CP/M Program");
 				else
@@ -1036,7 +1043,7 @@ the requested order */
 		nextline();
 		while (array[i]<0xFFF) {
 			strcpy(upbuffer,
-				(signed char*)directory[array[i]].name);
+				(char*)directory[array[i]].name);
 			j=array[i]; ent=1;
 /* detect mode */
 			if (directory[array[i]].blk[0]==0)
@@ -1045,7 +1052,7 @@ the requested order */
 /* the only other function using <block_buffer> here is <get_amshead>,
 but they do not interfere! */
 				buf = read_block(directory[array[i]].blk[0]);
-				mode = detectmode(buf,dpb->BLS);
+				mode = detectmode((char*)buf,dpb->BLS);
 			}
 /* count entries */
 			while(directory[j].next>-1) {
@@ -1248,10 +1255,10 @@ time_t	now;
 /* fill disk_header */
 	printm(3,"Formatting (%s) ",show_format(dpb->ID));
 	for (j=0;j<0x2F;j++) disk_header.tag[j] = 0;
-	strcpy ((signed char*)disk_header.tag,"MV - CPCEMU / ");
+	strcpy ((char*)disk_header.tag,"MV - CPCEMU / ");
 	memset((disk_header.tag)+14,' ',20);
 	now = time(NULL);
-	strftime(((signed char*)disk_header.tag)+14,20,"%d %b %y %H:%M",
+	strftime(((char*)disk_header.tag)+14,20,"%d %b %y %H:%M",
 							localtime(&now));
 	disk_header.nbof_tracks	= dpb->TRKS;
 	disk_header.nbof_heads	= dpb->HDS;
@@ -1272,7 +1279,7 @@ time_t	now;
 		}
 /* fill track_header */
 		putcharm(3,'.'); fflush(stdout);
-		strncpy((signed char*)trhd->tag,"Track-Info\r\n",0x10);
+		strncpy((char*)trhd->tag,"Track-Info\r\n",0x10);
 		trhd->track	= i;
 		trhd->head	= h;
 		trhd->unused[0] = 0;
@@ -1344,24 +1351,24 @@ const char wild_fmt[] = "\"%s\" may not contain wildcards";
 	if (from_user==-2) return errorf(FALSE,"--==>>> ren_file: wild user");
 	if (*from_root==0)
 		return errorf(FALSE,"No name in \"%s\"",from);
-	build_cpm_name((signed char*)from_full, from_user,
-		(signed char*)from_root, (signed char*)from_ext);
-        
+	build_cpm_name((char*)from_full, from_user,
+		(char*)from_root, (char*)from_ext);
+
 	parse_cpm_filename(to,&to_user,to_root,to_ext);
 	if (to_user==-1) to_user = cur_user;
 	if (*to_root==0) {
 		strcpy(to_root,from_root);
 		strcpy(to_ext,from_ext);
 	}
-	build_cpm_name((signed char*)to_full, to_user,
-		(signed char*)to_root, (signed char*)to_ext);
+	build_cpm_name((char*)to_full, to_user,
+		(char*)to_root, (char*)to_ext);
 
 /* test on identity of <to> and <from> */
 	if (strcmp(to_full,from_full)==0) {
 		printm(2,"Renaming \"%s\" to itself\n",from_full);
 		return 0;
 	}
-	
+
 /* check if already exists */
 	if (glob_cpm_file(to_full)>=0) {
 		if (Verb > 0) {
@@ -1379,13 +1386,13 @@ const char wild_fmt[] = "\"%s\" may not contain wildcards";
 
 	do {
 		directory[ent].user = to_user;
-		str2mem((signed char*)directory[ent].root,
-			(signed char*)to_root, 8);
-		str2mem((signed char*)directory[ent].ext,
-			(signed char*)to_ext, 3);
+		str2mem((char*)directory[ent].root,
+			(char*)to_root, 8);
+		str2mem((char*)directory[ent].ext,
+			(char*)to_ext, 3);
 		ent = directory[ent].next;
 	} while (ent>=0);
-		
+
 	return 0;
 }
 
@@ -1426,7 +1433,7 @@ char	tempname[INPUTLEN];
 int	err;
 
 	tmp_nam(tempname);
-	
+
 	printm(3,"Copying \"%s\" to ",from);
 	err=get(from,tempname);
 	if (err==-1) {
@@ -1439,7 +1446,7 @@ int	err;
 		return -1;
 	}
 	printm(3,"\"%s\"\n",to);
-	
+
 	unlink(tempname);
 	return 0;
 }
@@ -1479,11 +1486,11 @@ int dumpdir (FILE* file) {
 /*  ^^^^^^^ */
 int	i,j;
 char	n[INPUTLEN],e[INPUTLEN];
-					
+
 	fprintf(file," #  U NAME         EX RE ATR BLOCKS\t\t\t\t\t    NEX\n");
 	for (i=0;i<=dpb->DRM;i++) {
-		strncpy(n,(signed char*)directory[i].root,8); 	n[8] = 0;
-		strncpy(e,(signed char*)directory[i].ext,3);	e[3] = 0;
+		strncpy(n,(char*)directory[i].root,8); 	n[8] = 0;
+		strncpy(e,(char*)directory[i].ext,3);	e[3] = 0;
 		fprintf(file,"%2X%c%2X %s.%s %2X %2X ",
 			i, (directory[i].first?'>':' '),
 			directory[i].user,
@@ -1502,7 +1509,7 @@ char	n[INPUTLEN],e[INPUTLEN];
 			fprintf(file,">%2X",directory[i].next);
 		else
 			fprintf(file,"<<<");
-		putc(10,file); 
+		putc(10,file);
 		if (fflush(file)!=0)
 			return errorf(TRUE,"DUMP -D");
 	}
@@ -1535,7 +1542,7 @@ uchar	*p, *q;
 
 	for (k=0;k<secs;k++) {
 		read_track(hd,trk);
-        
+
 		fprintf(file,
 			"\nBlock %d/Part %d   Head %d Track %d Sector %d\n\n",
 			block,k,  hd,trk,sec);
@@ -1587,7 +1594,7 @@ char	*str;
 		fprintf(file,"%c ",vert);
 		for (s=0;s<dpb->SECS;s++) {
 			fprintf(file,"%-2d ",s);
-		}		
+		}
 	}
 	fprintf(file,"\n");
 
@@ -1600,7 +1607,7 @@ char	*str;
 
 	for (t=0;t<dpb->TRKS;t++) {
 		fprintf(file,"%-4d  ",t);
-		for (h=0;h<dpb->HDS;h++) {			
+		for (h=0;h<dpb->HDS;h++) {
 			fprintf(file,"%c ",vert);
 			for (s=0;s<dpb->SECS;s++) {
 
@@ -1619,7 +1626,7 @@ char	*str;
 				}
 				if (is_free_block(b)) {
 					fprintf(file,"-- ");
-				} else {	
+				} else {
 					fprintf(file,"%2X ",blk_alloc[b]);
 				}
 			}
@@ -1722,7 +1729,7 @@ uchar	*buf, *p;
 				if (mode!=M_AUTO)
 					localmode = mode;
 				else {
-					localmode = detectmode(buf,
+					localmode = detectmode((char*)buf,
 							(signed)dpb->BPS);
 /*					printm(3,"%s detected.\n",
 						show_mode(localmode));
@@ -1741,7 +1748,7 @@ uchar	*buf, *p;
 			} else {
 				size = dpb->BLS;
 			}
-			
+
 			if (localmode==M_BIN) {
 				err=write(file,buf,size);
 				bytes += size;
@@ -1853,10 +1860,10 @@ struct stat stat_buf;
 
 /* fill name, user ... */
 		directory[entry].user = usr;
-		str2mem((signed char*)directory[entry].root,
-			(signed char*)rootname, 8);
-		str2mem((signed char*)directory[entry].ext,
-			(signed char*)extension, 3);
+		str2mem((char*)directory[entry].root,
+			(char*)rootname, 8);
+		str2mem((char*)directory[entry].ext,
+			(char*)extension, 3);
 		directory[entry].attr	= 0x00;
 		directory[entry].unused[0]	= 0;	/* reserved for CP/M */
 		directory[entry].unused[1]	= 0;
@@ -1886,7 +1893,7 @@ struct stat stat_buf;
 			}
 /* write the block */
 			alloc_block(blk,entry);
-			if (write_block(blk,(signed char*)buf)==NULL) {
+			if (write_block(blk,(char*)buf)==NULL) {
 				errorf(FALSE,"Write error!");
 				close(file);
 				return -2;
@@ -1928,6 +1935,3 @@ struct stat stat_buf;
 	calc_allocation();
 	return total;
 }
-
-
-

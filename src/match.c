@@ -86,7 +86,7 @@ BOOLEAN is_valid_pattern (char *p, int *error_type)
                   }
                   p++;
                   break;
-                  
+
                   /* the [..] construct must be well formed */
             case '[':
                   p++;
@@ -97,7 +97,7 @@ BOOLEAN is_valid_pattern (char *p, int *error_type)
                         *error_type = PATTERN_EMPTY;
                         return FALSE;
                   }
-                
+
                   /* if end of pattern here then bad pattern */
                   if (!*p)
                   {
@@ -288,7 +288,7 @@ int matche (register char *p, register char *t)
                               /* get the range end */
 
                               range_end = *++p;
-                              
+
                               /* if end of pattern or construct
                                  then bad pattern */
 
@@ -458,7 +458,7 @@ int matche_after_star (register char *p, register char *t)
             if (!*t++)
                   match = MATCH_ABORT;
 
-      } while ( match != MATCH_VALID && 
+      } while ( match != MATCH_VALID &&
                 match != MATCH_ABORT &&
                 match != MATCH_PATTERN);
 
